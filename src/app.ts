@@ -5,21 +5,7 @@ const app = express();
 
 app.use(express.json())
 
-let characters: Character[] = [new Character(
-    'John Doe', 
-    'Warrior',
-    1,
-    100,
-    50,
-    10,
-    ['Sword', 'Shield']),new Character(
-    'Jane Doe', 
-    'Wizard',
-    1,
-    100,
-    50,
-    10,
-    ['Sword', 'Shield'])];
+
 
 
 app.get('/api/characters', (req, res) => {
@@ -28,7 +14,7 @@ app.get('/api/characters', (req, res) => {
 
 app.get('/api/character/:id', (req, res) => {
   
-  const character = characters.find((character) => character.id === req.params.id);  
+  const character = ;  
   
   if (!character) {
       res.status(404).json({ 
@@ -75,7 +61,7 @@ app.post('/api/characters', sanitizeCharacterInput , (req, res) => {
     input.attack,
     input.items
   );
-  characters.push(newCharacter);
+  
   res.status(201).json({ data: newCharacter });
 }
 );
