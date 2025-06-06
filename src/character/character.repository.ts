@@ -1,5 +1,5 @@
-import { Repository } from "../shared/repository";
-import { Character } from "./character.entity";
+import { Repository } from "../shared/repository.js";
+import { Character } from "./character.entity.js";
 
 const characters: Character[] = [new Character(
     'John Doe',
