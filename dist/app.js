@@ -2,6 +2,7 @@ import express from 'express';
 import { Character } from './character/character.entity.js';
 const app = express();
 app.use(express.json());
+let characters = [new Character('John Doe', 'Warrior', 1, 100, 50, 10, ['Sword', 'Shield']), new Character('Jane Doe', 'Wizard', 1, 100, 50, 10, ['Sword', 'Shield'])];
 app.get('/api/characters', (req, res) => {
     res.json(characters);
 });
