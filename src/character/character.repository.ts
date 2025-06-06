@@ -1,47 +1,35 @@
 import { Repository } from "../shared/repository.js";
 import { Character } from "./character.entity.js";
+import { db } from "../shared/db/mongodb-connection.js";
+import { ObjectId } from "mongodb";
 
-const characters: Character[] = [new Character(
-    'John Doe',
-    'Warrior',
-    1,
-    100,
-    50,
-    10,
-    ['Sword', 'Shield']), new Character(
-        'Jane Doe',
-        'Wizard',
-        1,
-        100,
-        50,
-        10,
-        ['Sword', 'Shield'])];
+const characters = db.collection<Character>('characters')
 
 export class CharacterRepository implements Repository<Character> {
-    findAll(): Character[] | undefined {
-        return characters;
+
+    async findAll(): Promise<Character[] | undefined> {
+        return await characters.find().toArray();
     }
-    findOne(item: { id: string; }) {
-        return characters.find((character) => character.id === item.id)
+
+    async findOne(item: { id: string; }) {
+        const _id = new ObjectId(item.id)
+        return (await characters.findOne({ _id: item.id })) || undefined
     }
-    add(item: Character) {
-        characters.push(item);
-        return item;
+
+    async add(item: Character): Promise<Character | undefined> {
+        const id = (await characters.insertOne(item)).insertedId
+        let character = await characters.findOne({ _id: id })
+        return character || undefined
     }
-    update(item: Character) {
-        const index = characters.findIndex((character) => character.id === item.id);
-        if (index !== -1) {
-            characters[index] = item;
-            return item;
-        }
-        throw new Error("Character not found");
+
+    async update(id: string, item: Character): Promise<Character | undefined> {
+        const _id = new ObjectId(id)
+        return (await characters.findOneAndUpdate({ _id: id }, { $set: item }, { returnDocument: 'after' })) || undefined
     }
-    delete(item: { id: string; }) {
-        const index = characters.findIndex((character) => character.id === item.id);
-        if (index !== -1) {
-            return characters.splice(index, 1)[0];
-        }
-        throw new Error("Character not found");
+
+    async delete(item: { id: string }): Promise<Character | undefined> {
+        const _id = new ObjectId(item.id)
+        return (await characters.findOneAndDelete({ _id: item.id })) || undefined
     }
 
 }
