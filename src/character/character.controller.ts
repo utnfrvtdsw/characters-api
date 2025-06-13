@@ -1,20 +1,20 @@
 import { Request, Response } from 'express';
-import { CharacterRepository } from './character.repository.js';
+import { CharacterMongoRepository } from './character.mongodb.repository.js';
 import { Character } from './character.entity.js';
 
 
-const characterRepository = new CharacterRepository();
+const characterRepository = new CharacterMongoRepository();
 
 export class CharacterController {
 
-    findAllCharacters(req: Request, res: Response) {
-        const characters = characterRepository.findAll();
+    async findAllCharacters(req: Request, res: Response) {
+        const characters = await characterRepository.findAll();
         res.json(characters);
     }
 
-    findCharacterById(req: Request, res: Response) {
+    async findCharacterById(req: Request, res: Response) {
         const characterId = req.params.id;
-        const character = characterRepository.findOne({ id: characterId });
+        const character = await characterRepository.findOne(characterId);
         if (!character) {
             res.status(404).json({
                 errorMessage: 'Character not found',
@@ -25,7 +25,7 @@ export class CharacterController {
         res.json({ data: character });
     }
 
-    addCharacter(req: Request, res: Response) {
+    async addCharacter(req: Request, res: Response) {
 
         const input = req.body;
         const newCharacter = new Character(
@@ -38,7 +38,7 @@ export class CharacterController {
             input.items
         );
 
-        characterRepository.add(newCharacter);
+        await characterRepository.add(newCharacter);
 
         res.status(201).json({ data: newCharacter });
 

@@ -10,8 +10,7 @@ export class Character {
         public hp: number,
         public mana: number,
         public attack: number,
-        public items: string[],
-        public _id : string
+        public items: string[]
     ) {}
 
 }
