@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
-import { CharacterMongoRepository } from './character.mongodb.repository.js';
 import { Character } from './character.entity.js';
+import { CharacterMongoRepository } from './character.mongodb.repository.js';
+import { CharacterPostgresRepository } from './character.postgres.repository.js';
 
 
-const characterRepository = new CharacterMongoRepository();
+//const characterRepository = new CharacterMongoRepository();
+const characterRepository = new CharacterPostgresRepository();
 
 export class CharacterController {
 

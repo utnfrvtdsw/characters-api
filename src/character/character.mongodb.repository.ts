@@ -1,14 +1,18 @@
 import { CharacterRepository } from "./character.repository.interface.js";
 import { Character } from "./character.entity.js";
-import { MongoClient, Db, ObjectId } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 const uri = process.env.MONGODB_URI || 'mongodb://root:example@localhost:27017/';
 const mongoClient = new MongoClient(uri);
-await mongoClient.connect();
 const db = mongoClient.db(process.env.MONGODB_DB || 'characters');
 const characters = db.collection<Character>('characters');
 
 export class CharacterMongoRepository implements CharacterRepository {
+
+    constructor() {
+        mongoClient.connect();
+    }
+
     async findAll(): Promise<Character[] | undefined> {
         return await characters.find().toArray();
     }
