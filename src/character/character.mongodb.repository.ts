@@ -2,7 +2,7 @@ import { CharacterRepository } from "./character.repository.interface.js";
 import { Character } from "./character.entity.js";
 import { MongoClient, Db, ObjectId } from "mongodb";
 
-const uri = process.env.MONGODB_URI || 'mongodb://admin:admin@localhost:27017/';
+const uri = process.env.MONGODB_URI || 'mongodb://root:example@localhost:27017/';
 const mongoClient = new MongoClient(uri);
 await mongoClient.connect();
 const db = mongoClient.db(process.env.MONGODB_DB || 'characters');
