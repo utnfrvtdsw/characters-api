@@ -4,8 +4,8 @@ import { CharacterMongoRepository } from './character.mongodb.repository.js';
 import { CharacterPostgresRepository } from './character.postgres.repository.js';
 
 
-//const characterRepository = new CharacterMongoRepository();
-const characterRepository = new CharacterPostgresRepository();
+const characterRepository = new CharacterMongoRepository();
+//const characterRepository = new CharacterPostgresRepository();
 
 export class CharacterController {
 
