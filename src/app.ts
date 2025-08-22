@@ -1,12 +1,36 @@
 import express from 'express';
-import { characterRouter } from './character/character.routes.js';
+import { CharacterRouter } from './character/character.routes.js';
+import { CharacterController } from './character/character.controller.js';
+import type { CharacterRepository } from './character/character.repository.interface.js';
+import { CharacterPostgresRepository } from './character/character.postgres.repository.js';
 
-const app = express();
+export class App {
+  public readonly app;
 
-app.use(express.json())
+  constructor({
+    repository,
+    controller,
+  }: { repository?: CharacterRepository; controller?: CharacterController } = {}) {
+    this.app = express();
+    this.app.use(express.json());
+    
+    const repo = repository || new CharacterPostgresRepository();
+    const ctrl = controller || new CharacterController(repo);
+    const characterRouter = new CharacterRouter(ctrl);
+    this.app.use('/api/characters', characterRouter.router);
+  }
 
-app.use('/api/characters', characterRouter);
+  static getDefaults() {
+    const repository = new CharacterPostgresRepository();
+    const controller = new CharacterController(repository);
+    return { repository, controller };
+  }
 
-app.listen(3000, () => {
-  console.log('Server runnning on http://localhost:3000/')
-})
+  start(port = 3000) {
+    this.app.listen(port, () => {
+      console.log(`Server running on http://localhost:${port}/`);
+    });
+  }
+}
+
+export default App;

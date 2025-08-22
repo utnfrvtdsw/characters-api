@@ -1,17 +1,22 @@
-import { Router } from "express";
+import { Router } from 'express';
+
 import { CharacterController } from './character.controller.js';
 
-export const characterRouter = Router();
-const characterController = new CharacterController();
+export class CharacterRouter {
+  public readonly router = Router();
 
-characterRouter.get('/', characterController.findAllCharacters);
-characterRouter.get('/:id', characterController.findCharacterById);
-characterRouter.post('/', sanitizeCharacterInput, characterController.addCharacter);
-characterRouter.put('/:id', sanitizeCharacterInput, characterController.updateCharacter);
-characterRouter.delete('/:id', characterController.deleteCharacter);  
+  constructor(controller: CharacterController) {
 
-function sanitizeCharacterInput(req:any, res:any, next:any) {
+    this.router.get('/', controller.findAllCharacters);
+    this.router.get('/:id', controller.findCharacterById);
+    this.router.post('/', sanitizeCharacterInput, controller.addCharacter);
+    this.router.put('/:id', sanitizeCharacterInput, controller.updateCharacter);
+    this.router.delete('/:id', controller.deleteCharacter);
+    
+  }
+}
 
+function sanitizeCharacterInput(req: any, res: any, next: any) {
   req.body.sanitizedInput = {
     name: req.body.name,
     characterClass: req.body.characterClass,
@@ -20,15 +25,14 @@ function sanitizeCharacterInput(req:any, res:any, next:any) {
     mana: req.body.mana,
     attack: req.body.attack,
     items: req.body.items,
-  }
+  };
   //more checks here
 
   Object.keys(req.body.sanitizedInput).forEach((key) => {
     if (req.body.sanitizedInput[key] === undefined) {
-      delete req.body.sanitizedInput[key]
+      delete req.body.sanitizedInput[key];
     }
-  })
+  });
 
-  next()
+  next();
 }
-
