@@ -14,7 +14,7 @@ export class CharacterController {
             host: 'localhost',
             database: 'characters_db',
             password: 'postgres',
-            port: 5433,
+            port: 5432,
         });
         this.client.connect();
     }
