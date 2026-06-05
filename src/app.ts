@@ -4,6 +4,9 @@ import { CharacterRoutes } from './character/character.routes';
 import { CharacterService } from './character/character.service';
 import { CharacterController } from './character/character.controller';
 import { CharacterRepositoryPostgres } from './character/character.repository.postgres';
+import { MongoClient } from 'mongodb';
+import { Character } from './character/character.entity';
+import { CharacterRepositoryMongodb } from './character/character.repository.mongodb';
 
 export class App {
 
@@ -22,8 +25,12 @@ export class App {
             password: 'postgres',
             port: 5432,
         });
-        const characterRepository = new CharacterRepositoryPostgres(this.dbPool);
-        
+
+        const uri = 'mongodb://root:example@localhost:27017/';
+        const mongoClient = new MongoClient(uri);
+
+        //const characterRepository = new CharacterRepositoryPostgres(this.dbPool);
+        const characterRepository = new CharacterRepositoryMongodb(mongoClient);
         const characterService = new CharacterService(characterRepository);
         const characterController = new CharacterController(characterService);
         const characterRoutes = new CharacterRoutes(characterController);

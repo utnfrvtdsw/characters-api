@@ -1,5 +1,5 @@
 export interface Character {
-    id: number;
+    id: string;
     create_time: Date;
     name: string;
     nickname: string | null;

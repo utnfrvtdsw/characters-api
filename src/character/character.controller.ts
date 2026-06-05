@@ -19,16 +19,16 @@ export class CharacterController {
         }
     }
 
-    public async getCharacter(req: Request, res: Response): Promise<void> {
+    public async getCharacter(req: Request<{ id: string }>, res: Response): Promise<void> {
         const id = req.params.id;
 
-        if (Number.isNaN(Number(id))) {
+        if (!id || id.trim().length === 0) {
             res.status(400).json({ error: 'Invalid character ID' });
             return;
         }
 
         try {
-            const character = await this.characterService.getCharacterById(Number(id));
+            const character = await this.characterService.getCharacterById(id);
 
             if (character) {
                 res.json(character);
@@ -51,16 +51,16 @@ export class CharacterController {
         }
     }
 
-    public async updateCharacter(req: Request, res: Response): Promise<void> {
+    public async updateCharacter(req: Request<{ id: string }>, res: Response): Promise<void> {
         const id = req.params.id;
 
-        if (Number.isNaN(Number(id))) {
+        if (!id || id.trim().length === 0) {
             res.status(400).json({ error: 'Invalid character ID' });
             return;
         }
 
         try {
-            const character = await this.characterService.updateCharacter(Number(id), req.body);
+            const character = await this.characterService.updateCharacter(id, req.body);
 
             if (character) {
                 res.json(character);
@@ -73,16 +73,16 @@ export class CharacterController {
         }
     }
 
-    public async deleteCharacter(req: Request, res: Response): Promise<void> {
+    public async deleteCharacter(req: Request<{ id: string }>, res: Response): Promise<void> {
         const id = req.params.id;
 
-        if (Number.isNaN(Number(id))) {
+        if (!id || id.trim().length === 0) {
             res.status(400).json({ error: 'Invalid character ID' });
             return;
         }
 
         try {
-            const deleted = await this.characterService.deleteCharacter(Number(id));
+            const deleted = await this.characterService.deleteCharacter(id);
 
             if (deleted) {
                 res.status(204).send();

@@ -9,9 +9,9 @@ export class CharacterService {
         return await this.characterRepository.getCharacters();
     }
 
-    async getCharacterById(id: number): Promise<Character | null> {
-        if (id <= 0) {
-            throw new Error('Character ID must be a positive number');
+    async getCharacterById(id: string): Promise<Character | null> {
+        if (!id || id.trim().length === 0) {
+            throw new Error('Character ID is required');
         }
 
         const character = await this.characterRepository.getCharacterById(id);
@@ -31,9 +31,9 @@ export class CharacterService {
         return character;
     }
 
-    async updateCharacter(id: number, characterData: Partial<Omit<Character, 'id' | 'create_time'>>): Promise<Character | null> {
-        if (id <= 0) {
-            throw new Error('Character ID must be a positive number');
+    async updateCharacter(id: string, characterData: Partial<Omit<Character, 'id' | 'create_time'>>): Promise<Character | null> {
+        if (!id || id.trim().length === 0) {
+            throw new Error('Character ID is required');
         }
 
         if (Object.keys(characterData).length === 0) {
@@ -57,9 +57,9 @@ export class CharacterService {
         return character;
     }
 
-    async deleteCharacter(id: number): Promise<boolean> {
-        if (id <= 0) {
-            throw new Error('Character ID must be a positive number');
+    async deleteCharacter(id: string): Promise<boolean> {
+        if (!id || id.trim().length === 0) {
+            throw new Error('Character ID is required');
         }
 
         const deleted = await this.characterRepository.deleteCharacter(id);
