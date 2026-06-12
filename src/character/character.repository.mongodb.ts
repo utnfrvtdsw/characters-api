@@ -1,16 +1,45 @@
 import { Character } from "./character.entity";
 import { CharacterRepository } from "./character.repository.interface";
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId, WithId, Document } from 'mongodb';
 
 export class CharacterRepositoryMongodb implements CharacterRepository {
 
     private readonly mongoClient: MongoClient;
-    private db() {
-        return this.mongoClient.db('characters');
+    private readonly dbName: string;
+
+    constructor(mongoClient: MongoClient, dbName: string = 'characters') {
+        this.mongoClient = mongoClient;
+        this.dbName = dbName;
     }
 
-    constructor(mongoClient: MongoClient) {
-        this.mongoClient = mongoClient;
+    private collection() {
+        return this.mongoClient.db(this.dbName).collection('characters');
+    }
+
+    private toCharacter(doc: WithId<Document>): Character {
+        return {
+            id: doc._id.toString(),
+            create_time: doc.create_time,
+            name: doc.name,
+            nickname: doc.nickname ?? null,
+            class_name: doc.class_name ?? null,
+            race: doc.race ?? null,
+            level: doc.level,
+            experience_points: doc.experience_points,
+            health_points: doc.health_points,
+            mana_points: doc.mana_points,
+            strength: doc.strength,
+            agility: doc.agility,
+            intelligence: doc.intelligence,
+            defense: doc.defense,
+            is_alive: doc.is_alive,
+            avatar_url: doc.avatar_url ?? null,
+            backstory: doc.backstory ?? null,
+        };
+    }
+
+    private toObjectId(id: string): ObjectId | null {
+        return ObjectId.isValid(id) ? new ObjectId(id) : null;
     }
 
     async createCharacter(character: Omit<Character, "id" | "create_time">): Promise<Character> {
@@ -20,7 +49,7 @@ export class CharacterRepositoryMongodb implements CharacterRepository {
             create_time
         };
 
-        const result = await this.db().collection('characters').insertOne(characterToInsert);
+        const result = await this.collection().insertOne(characterToInsert);
         const id = result.insertedId.toString();
 
         return {
@@ -29,36 +58,46 @@ export class CharacterRepositoryMongodb implements CharacterRepository {
             ...character
         };
     }
-    getCharacterById(id: string): Promise<Character | null> {
-        throw new Error("Method not implemented.");
+
+    async getCharacterById(id: string): Promise<Character | null> {
+        const _id = this.toObjectId(id);
+        if (!_id) return null;
+
+        const doc = await this.collection().findOne({ _id });
+        return doc ? this.toCharacter(doc) : null;
     }
+
     async getCharacters(): Promise<Character[]> {
-        const characters = await this.db().collection('characters').find().toArray();
-        return characters.map(character => ({
-            id: character._id.toString(),
-            create_time: character.create_time,
-            name: character.name,
-            nickname: character.nickname,
-            class_name: character.class_name,
-            race: character.race,
-            level: character.level,
-            experience_points: character.experience_points,
-            health_points: character.health_points,
-            mana_points: character.mana_points,
-            strength: character.strength,
-            agility: character.agility,
-            intelligence: character.intelligence,
-            defense: character.defense,
-            is_alive: character.is_alive,
-            avatar_url: character.avatar_url,
-            backstory: character.backstory,
-        }));
+        const docs = await this.collection().find().toArray();
+        return docs.map(doc => this.toCharacter(doc));
     }
-    updateCharacter(id: string, character: Partial<Omit<Character, "id" | "create_time">>): Promise<Character | null> {
-        throw new Error("Method not implemented.");
+
+    async updateCharacter(id: string, character: Partial<Omit<Character, "id" | "create_time">>): Promise<Character | null> {
+        const _id = this.toObjectId(id);
+        if (!_id) return null;
+
+        const updateFields = Object.fromEntries(
+            Object.entries(character).filter(([, value]) => value !== undefined)
+        );
+
+        if (Object.keys(updateFields).length === 0) {
+            return this.getCharacterById(id);
+        }
+
+        const doc = await this.collection().findOneAndUpdate(
+            { _id },
+            { $set: updateFields },
+            { returnDocument: 'after' }
+        );
+
+        return doc ? this.toCharacter(doc) : null;
     }
-    deleteCharacter(id: string): Promise<boolean> {
-        throw new Error("Method not implemented.");
+
+    async deleteCharacter(id: string): Promise<boolean> {
+        const _id = this.toObjectId(id);
+        if (!_id) return false;
+
+        const result = await this.collection().deleteOne({ _id });
+        return result.deletedCount > 0;
     }
-  // Implement MongoDB specific methods for character repository here
 }

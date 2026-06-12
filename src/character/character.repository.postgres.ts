@@ -10,6 +10,10 @@ export class CharacterRepositoryPostgres implements CharacterRepository {
         this.client = client;
     }
 
+    private toCharacter(row: any): Character {
+        return { ...row, id: String(row.id) };
+    }
+
     async createCharacter(character: Omit<Character, 'id' | 'create_time'>): Promise<Character> {
         const query = `INSERT INTO "character" (name, nickname, class_name, race, level, experience_points, health_points, mana_points, strength, agility, intelligence, defense, is_alive, avatar_url, backstory) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`;
         const values = [
@@ -30,23 +34,23 @@ export class CharacterRepositoryPostgres implements CharacterRepository {
             character.backstory
         ];
         const result = await this.client.query(query, values);
-        return result.rows[0] as Character;
+        return this.toCharacter(result.rows[0]);
     }
 
-    async getCharacterById(id: number): Promise<Character | null> {
+    async getCharacterById(id: string): Promise<Character | null> {
         const result = await this.client.query('SELECT * FROM "character" WHERE id = $1', [id]);
         if (result.rows.length > 0) {
-            return result.rows[0] as Character;
+            return this.toCharacter(result.rows[0]);
         }
         return null;
     }
 
     async getCharacters(): Promise<Character[]> {
         const result = await this.client.query('SELECT * FROM "character"');
-        return result.rows as Character[];
+        return result.rows.map(row => this.toCharacter(row));
     }
 
-    async updateCharacter(id: number, character: Partial<Omit<Character, 'id' | 'create_time'>>): Promise<Character | null> {
+    async updateCharacter(id: string, character: Partial<Omit<Character, 'id' | 'create_time'>>): Promise<Character | null> {
         const fields: string[] = [];
         const values: any[] = [];
         let paramCount = 1;
@@ -68,12 +72,12 @@ export class CharacterRepositoryPostgres implements CharacterRepository {
         const result = await this.client.query(query, values);
 
         if (result.rows.length > 0) {
-            return result.rows[0] as Character;
+            return this.toCharacter(result.rows[0]);
         }
         return null;
     }
 
-    async deleteCharacter(id: number): Promise<boolean> {
+    async deleteCharacter(id: string): Promise<boolean> {
         const result = await this.client.query('DELETE FROM "character" WHERE id = $1', [id]);
         return result.rowCount !== null && result.rowCount > 0;
     }
