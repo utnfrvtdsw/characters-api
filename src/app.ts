@@ -3,7 +3,7 @@ import { CharacterRoutes } from './character/character.routes';
 import { CharacterService } from './character/character.service';
 import { CharacterController } from './character/character.controller';
 import { config } from './config';
-import { createDatabaseProvider, DatabaseProvider } from './db/database.factory';
+import { createDatabaseProvider, DatabaseProvider } from './db/database-provider.factory';
 
 export class App {
 
@@ -30,6 +30,13 @@ export class App {
             console.log(`Server is running on port ${config.port}`);
         });
         console.log('App started');
+    }
+
+    public shutdown() {
+        console.log('Shutting down app...');
+        this.close().then(() => {
+            process.exit(0);
+        });
     }
 
     public async close() {

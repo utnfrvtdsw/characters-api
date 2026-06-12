@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/init.ts",
-    "dev:postgres": "DB_ENGINE=postgres nodemon src/init.ts",
-    "dev:mongo": "DB_ENGINE=mongodb nodemon src/init.ts"
+    "dev:postgres": "DB_ENGINE=postgres PORT=3500 nodemon src/init.ts",
+    "dev:mongo": "DB_ENGINE=mongodb PORT=4000 nodemon src/init.ts"
   },
   "author": "",
   "license": "ISC",
