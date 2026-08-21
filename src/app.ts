@@ -3,6 +3,7 @@ import { CharacterRoutes } from './character/character.routes';
 import { CharacterService } from './character/character.service';
 import { CharacterController } from './character/character.controller';
 import { config } from './config';
+import cors from 'cors';
 import { createDatabaseProvider, DatabaseProvider } from './db/database-provider.factory';
 
 export class App {
@@ -14,6 +15,7 @@ export class App {
         this.app = express();
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(cors());
 
         this.database = createDatabaseProvider();
         console.log(`Database engine: ${config.dbEngine}`);
