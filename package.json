@@ -6,14 +6,25 @@
   "scripts": {
     "dev": "nodemon src/init.ts",
     "dev:postgres": "cross-env DB_ENGINE=postgres PORT=3500 nodemon src/init.ts",
-    "dev:mongo": "cross-env DB_ENGINE=mongodb PORT=4000 nodemon src/init.ts"
+    "dev:mongo": "cross-env DB_ENGINE=mongodb PORT=4000 nodemon src/init.ts",
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand --runTestsByPath test/character.service.unit.test.ts",
+    "test:integration": "jest --runInBand --runTestsByPath test/character.repository.integration.test.ts",
+    "test:watch": "jest --watchAll --runInBand --runTestsByPath test/character.service.unit.test.ts",
+    "test:coverage": "jest --runInBand --coverage"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-typescript": "^7.29.7",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jest": "^30.0.0",
     "@types/pg": "^8.20.0",
+    "babel-jest": "^30.5.2",
+    "jest": "^30.5.2",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
     "tsc-watch": "^7.2.0",

@@ -1,5 +1,5 @@
 ### Obtener todos los characters
-GET http://localhost:3000/api/characters
+GET http://localhost:3500/api/characters
 
 ### Obtener un character por id
 GET http://localhost:3000/api/character/1
