@@ -11,7 +11,8 @@
     "test:unit": "jest --runInBand --runTestsByPath test/character.service.unit.test.ts",
     "test:integration": "jest --runInBand --runTestsByPath test/character.repository.integration.test.ts",
     "test:watch": "jest --watchAll --runInBand --runTestsByPath test/character.service.unit.test.ts",
-    "test:coverage": "jest --runInBand --coverage"
+    "test:coverage": "jest --runInBand --coverage",
+    "prepare": "husky"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "@types/jest": "^30.0.0",
     "@types/pg": "^8.20.0",
     "babel-jest": "^30.5.2",
+    "husky": "^9.1.7",
     "jest": "^30.5.2",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
