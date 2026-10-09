@@ -1,14 +1,10 @@
-import { Pool } from "pg";
+import type { Pool } from "pg";
 import { Character } from "./character.entity";
 import { CharacterRepository } from "./character.repository.interface";
 
 export class CharacterRepositoryPostgres implements CharacterRepository {
 
-    private client: Pool;
-
-    constructor(client: Pool) {
-        this.client = client;
-    }
+    constructor(private readonly client: Pick<Pool, 'query'>) {}
 
     private toCharacter(row: any): Character {
         return { ...row, id: String(row.id) };

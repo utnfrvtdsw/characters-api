@@ -10,6 +10,7 @@
     "test": "jest --runInBand",
     "test:unit": "jest --runInBand --runTestsByPath test/character.service.unit.test.ts",
     "test:integration": "jest --runInBand --runTestsByPath test/character.repository.integration.test.ts",
+    "test:integration:podman": "cross-env TESTCONTAINERS_RYUK_PRIVILEGED=true npm run test:integration",
     "test:watch": "jest --watchAll --runInBand --runTestsByPath test/character.service.unit.test.ts",
     "test:coverage": "jest --runInBand --coverage",
     "prepare": "husky"
@@ -20,6 +21,7 @@
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-typescript": "^7.29.7",
+    "@testcontainers/postgresql": "^12.2.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",

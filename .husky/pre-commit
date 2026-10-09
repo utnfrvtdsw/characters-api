@@ -1,1 +1,5 @@
+# Ryuk necesita modo privilegiado con Podman; permite sobrescribirlo por entorno.
+export TESTCONTAINERS_RYUK_PRIVILEGED="${TESTCONTAINERS_RYUK_PRIVILEGED:-true}"
+
+# Jest ejecuta los tests unitarios y de integración con cobertura.
 npm run test:coverage
