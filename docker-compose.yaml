@@ -1,27 +1,59 @@
 services:
+  api:
+    build: .
+    init: true
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      PORT: 3000
+      DB_ENGINE: ${DB_ENGINE:-postgres}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-characters_db}
+      MONGO_URI: mongodb://root:example@mongodb:27017/?authSource=admin
+      MONGO_DB: ${MONGO_DB:-characters}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+
   mongodb:
-    image: mongo:6.0
-    container_name: mongodb
+    image: docker.io/library/mongo:6.0
     ports:
       - '27017:27017'
     volumes:
       - mongodb_data:/data/db
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=characters
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-characters}
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'quit(db.adminCommand("ping").ok ? 0 : 1)']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   postgres:
-    image: postgres:15
-    container_name: postgres
+    image: docker.io/library/postgres:15
     ports:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./src/db/sql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=characters_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-characters_db}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
 volumes:
   mongodb_data:
