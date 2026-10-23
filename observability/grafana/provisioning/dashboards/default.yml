@@ -1,0 +1,9 @@
+apiVersion: 1
+
+providers:
+  - name: Characters API
+    orgId: 1
+    folder: Characters API
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

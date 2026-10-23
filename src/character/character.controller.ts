@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { CharacterService } from "./character.service";
+import { logger } from "../observability/logger.service";
 
 export class CharacterController {
 
@@ -14,7 +15,7 @@ export class CharacterController {
             const characters = await this.characterService.getAllCharacters();
             res.json(characters);
         } catch (error) {
-            console.error('Error fetching characters:', error);
+            logger.error({ err: error }, 'Error fetching characters');
             res.status(500).json({ error: 'Internal Server Error' });
         }
     }
@@ -22,8 +23,11 @@ export class CharacterController {
     public async getCharacter(req: Request<{ id: string }>, res: Response): Promise<void> {
         const id = req.params.id;
 
+        logger.info({"id": id})
+
         if (!id || id.trim().length === 0) {
             res.status(400).json({ error: 'Invalid character ID' });
+            logger.error({ error: 'Invalid character ID' });
             return;
         }
 
@@ -34,9 +38,10 @@ export class CharacterController {
                 res.json(character);
             } else {
                 res.status(404).json({ error: 'Character not found' });
+                logger.debug({ error: 'Character not found' });
             }
         } catch (error: any) {
-            console.error('Error fetching character:', error);
+            logger.error({ err: error }, 'Error fetching character');
             res.status(400).json({ error: error.message });
         }
     }
@@ -46,7 +51,7 @@ export class CharacterController {
             const character = await this.characterService.createCharacter(req.body);
             res.status(201).json(character);
         } catch (error: any) {
-            console.error('Error creating character:', error);
+            logger.error({ err: error }, 'Error creating character');
             res.status(400).json({ error: error.message });
         }
     }
@@ -68,7 +73,7 @@ export class CharacterController {
                 res.status(404).json({ error: 'Character not found' });
             }
         } catch (error: any) {
-            console.error('Error updating character:', error);
+            logger.error({ err: error }, 'Error updating character');
             res.status(400).json({ error: error.message });
         }
     }
@@ -90,7 +95,7 @@ export class CharacterController {
                 res.status(404).json({ error: 'Character not found' });
             }
         } catch (error: any) {
-            console.error('Error deleting character:', error);
+            logger.error({ err: error }, 'Error deleting character');
             res.status(400).json({ error: error.message });
         }
     }

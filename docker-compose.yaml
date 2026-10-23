@@ -1,24 +1,26 @@
 services:
-  api:
-    build: .
-    init: true
+  prometheus:
+    image: docker.io/prom/prometheus:v3.15.1
     ports:
-      - '${PORT:-3000}:3000'
+      - '9090:9090'
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: docker.io/grafana/grafana:12.4.0
+    ports:
+      - '3001:3000'
     environment:
-      PORT: 3000
-      DB_ENGINE: ${DB_ENGINE:-postgres}
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-characters_db}
-      MONGO_URI: mongodb://root:example@mongodb:27017/?authSource=admin
-      MONGO_DB: ${MONGO_DB:-characters}
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
-      postgres:
-        condition: service_healthy
-      mongodb:
-        condition: service_healthy
+      - prometheus
 
   mongodb:
     image: docker.io/library/mongo:6.0
@@ -56,6 +58,10 @@ services:
       start_period: 10s
 
 volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
   mongodb_data:
     driver: local
   postgres_data:

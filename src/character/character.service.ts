@@ -1,9 +1,14 @@
 import { Character } from './character.entity';
 import { CharacterRepository } from './character.repository.interface';
+import { characterMetrics } from './character.metrics';
+import type { CharacterMetrics } from './character.metrics';
 
 export class CharacterService {
 
-    constructor(private readonly characterRepository: CharacterRepository) {}
+    constructor(
+        private readonly characterRepository: CharacterRepository,
+        private readonly metrics: CharacterMetrics = characterMetrics,
+    ) {}
 
     async getAllCharacters(): Promise<Character[]> {
         return await this.characterRepository.getCharacters();
@@ -27,6 +32,7 @@ export class CharacterService {
         this.validateCharacterData(characterData);
 
         const character = await this.characterRepository.createCharacter(characterData);
+        this.metrics.created.inc();
 
         return character;
     }
@@ -53,6 +59,9 @@ export class CharacterService {
         }
 
         const character = await this.characterRepository.updateCharacter(id, characterData);
+        if (character) {
+            this.metrics.updated.inc();
+        }
 
         return character;
     }
@@ -63,6 +72,9 @@ export class CharacterService {
         }
 
         const deleted = await this.characterRepository.deleteCharacter(id);
+        if (deleted) {
+            this.metrics.deleted.inc();
+        }
 
         return deleted;
     }

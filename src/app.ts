@@ -1,4 +1,7 @@
 import express from 'express';
+import { logger } from './observability/logger.service';
+import { metrics } from './observability/metrics.service';
+import { metricsMiddleware } from './observability/metrics.middleware';
 import { CharacterRoutes } from './character/character.routes';
 import { CharacterService } from './character/character.service';
 import { CharacterController } from './character/character.controller';
@@ -13,12 +16,18 @@ export class App {
 
     constructor() {
         this.app = express();
+        this.app.use(metricsMiddleware);
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(cors());
 
+        this.app.get('/metrics', async (_req, res) => {
+            res.setHeader('Content-Type', metrics.contentType);
+            res.send(await metrics.metrics());
+        });
+
         this.database = createDatabaseProvider();
-        console.log(`Database engine: ${config.dbEngine}`);
+        logger.info({ dbEngine: config.dbEngine }, 'Database engine selected');
 
         const characterService = new CharacterService(this.database.characterRepository);
         const characterController = new CharacterController(characterService);
@@ -29,13 +38,13 @@ export class App {
 
     public start() {
         this.app.listen(config.port, () => {
-            console.log(`Server is running on port ${config.port}`);
+            logger.info({ port: config.port }, 'Server is running');
         });
-        console.log('App started');
+        logger.info('App started');
     }
 
     public shutdown() {
-        console.log('Shutting down app...');
+        logger.info('Shutting down app...');
         this.close().then(() => {
             process.exit(0);
         });

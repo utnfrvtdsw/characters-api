@@ -1,15 +1,21 @@
 ### Obtener todos los characters
-GET http://localhost:3500/api/characters
+GET http://localhost:4000/api/characters
+
+
+### Metricas
+GET http://localhost:4000/metrics
+
+
 
 ### Obtener un character por id
-GET http://localhost:3000/api/character/1
+GET http://localhost:4000/api/character/6a234ee9727976ea4f9bd55a
 
 ### Crear un character
-POST http://localhost:3000/api/character
+POST http://localhost:4000/api/character
 Content-Type: application/json
 
 {
-    "name": "Aragorn",
+    "name": "Gus 5",
     "nickname": "Strider",
     "class_name": "Ranger",
     "race": "Human",
@@ -27,14 +33,14 @@ Content-Type: application/json
 }
 
 ### Actualizar un character
-PUT http://localhost:3000/api/character/1
+PUT http://localhost:4000/api/character/6a2c7442a642947577da26fa
 Content-Type: application/json
 
 {
     "level": 21,
-    "experience_points": 55000,
+    "experience_points": 4500,
     "health_points": 160
 }
 
 ### Eliminar un character
-DELETE http://localhost:3000/api/character/1
+DELETE http://localhost:4000/api/character/6adbd5abeb3b35037b51495a
